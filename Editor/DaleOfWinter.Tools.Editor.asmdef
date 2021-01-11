@@ -1,0 +1,16 @@
+{
+    "name": "DaleOfWinter.Tools.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:784fd6b4529f8524dbe2b66b93da0896"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,16 @@
+{
+  "name": "com.daleofwinter.minmaxslider",
+  "version": "1.0.0",
+  "displayName": "Min Max Slider",
+  "description": "Min Max Slider drawer for Unity Editor.",
+  "unity": "2020.1",
+ "keywords": [
+    "package",
+	  "template"
+  ],
+  "author": {
+    "name": "Lucas Wilke",
+    "email": "ayellowpaper@gmail.com",
+    "url": "https://www.daleofwinter.com"
+  }
+}
