@@ -9,6 +9,7 @@ namespace DaleOfWinter.Tools.Editor
     public static class DOWEditorGUI
     {
         public const string SliderControlName = "MinMaxSlider";
+        private const string Format = "Min: {0}\nMax: {1}\nRange: {2}";
 
         public static void DoIntMinMaxSlider(Rect position, SerializedProperty property, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition)
         {
@@ -38,6 +39,7 @@ namespace DaleOfWinter.Tools.Editor
         /// </summary>
         public static Vector2Int DoIntMinMaxSlider(Rect position, GUIContent content, Vector2Int value, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition)
         {
+            content.tooltip = string.Format(Format, value.x, value.y, value.y - value.x) + (string.IsNullOrEmpty(content.tooltip) ? "" : "\n" + content.tooltip);
             Rect newPosition = EditorGUI.PrefixLabel(position, content);
             return DoIntMinMaxSlider(newPosition, value, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition);
         }
@@ -91,6 +93,7 @@ namespace DaleOfWinter.Tools.Editor
         /// </summary>
         public static Vector2 DoMinMaxSlider(Rect position, GUIContent content, Vector2 value, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition)
         {
+            content.tooltip = string.Format(Format, value.x, value.y, value.y - value.x) + (string.IsNullOrEmpty(content.tooltip) ? "" : "\n" + content.tooltip);
             Rect newPosition = EditorGUI.PrefixLabel(position, content);
             return DoMinMaxSlider(newPosition, value, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition);
         }
