@@ -8,6 +8,8 @@ namespace DaleOfWinter.Tools.Editor
 {
     public static class DOWEditorGUI
     {
+        public const string SliderControlName = "MinMaxSlider";
+
         public static void DoIntMinMaxSlider(Rect position, SerializedProperty property, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition)
         {
             DoIntMinMaxSlider(position, property, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition, property.displayName);
@@ -46,7 +48,19 @@ namespace DaleOfWinter.Tools.Editor
         public static Vector2Int DoIntMinMaxSlider(Rect position, Vector2Int value, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition)
         {
             var newValue = DoMinMaxSlider(position, value, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition);
-            return new Vector2Int(Mathf.RoundToInt(newValue.x), Mathf.RoundToInt(newValue.y));
+            Vector2Int actualNewValue = new Vector2Int(Mathf.RoundToInt(newValue.x), Mathf.RoundToInt(newValue.y));
+            // after dragging both values with the slider at the same time it's possible that the distance get's messed up because of rounding issues, so we check for that here
+            int wantedDistance = Mathf.RoundToInt(newValue.y - newValue.x);
+            int currentDistance = actualNewValue.y - actualNewValue.x;
+            if (wantedDistance != currentDistance)
+            {
+                int requiredAdjustment = wantedDistance - currentDistance;
+                if (actualNewValue.y + requiredAdjustment <= maxLimit)
+                    actualNewValue.y += requiredAdjustment;
+                else
+                    actualNewValue.x += requiredAdjustment;
+            }
+            return actualNewValue;
         }
 
         public static void DoMinMaxSlider(Rect position, SerializedProperty property, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition)
@@ -98,12 +112,14 @@ namespace DaleOfWinter.Tools.Editor
                 fieldWidth = (position.width - (spacing * (fieldsToShow - 1))) / fieldsToShow;
             float sliderWidth = onlyShowFields ? 0f : position.width - requiredSpaceForFields;
 
+            
             if (!onlyShowFields)
             {
                 Rect pos = new Rect(position);
                 pos.width = sliderWidth;
                 pos.x += leftFields * (fieldWidth + spacing);
                 EditorGUI.BeginChangeCheck();
+                GUI.SetNextControlName(SliderControlName);
                 EditorGUI.MinMaxSlider(pos, ref newValue.x, ref newValue.y, minLimit, maxLimit);
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -115,6 +131,7 @@ namespace DaleOfWinter.Tools.Editor
                     {
                         newValue.y = GetAdjustedValue(newValue.y, minLimit, maxLimit, sliderWidth);
                     }
+                    GUI.FocusControl(SliderControlName);
                 }
             }
 
