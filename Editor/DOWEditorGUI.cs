@@ -6,33 +6,10 @@ using System;
 
 namespace DaleOfWinter.Tools.Editor
 {
-    public static class DOWEditorGUI
+    public static partial class DOWEditorGUI
     {
         public const string SliderControlName = "MinMaxSlider";
         private const string Format = "Min: {0}\nMax: {1}\nRange: {2}";
-
-        public static void DoIntMinMaxSlider(Rect position, SerializedProperty property, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition)
-        {
-            DoIntMinMaxSlider(position, property, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition, property.displayName);
-        }
-
-        public static void DoIntMinMaxSlider(Rect position, SerializedProperty property, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition, string label)
-        {
-            DoIntMinMaxSlider(position, property, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition, EditorGUIUtility.TrTempContent(label));
-        }
-
-        public static void DoIntMinMaxSlider(Rect position, SerializedProperty property, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition, GUIContent content)
-        {
-            var propertyLabel = EditorGUI.BeginProperty(position, content, property);
-            Vector2Int value = property.vector2IntValue;
-            EditorGUI.BeginChangeCheck();
-            value = DoIntMinMaxSlider(position, propertyLabel, value, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition);
-            if (EditorGUI.EndChangeCheck())
-            {
-                property.vector2IntValue = value;
-            }
-            EditorGUI.EndProperty();
-        }
 
         /// <summary>
         /// MinMaxSlider with int values and label.
@@ -65,29 +42,6 @@ namespace DaleOfWinter.Tools.Editor
             return actualNewValue;
         }
 
-        public static void DoMinMaxSlider(Rect position, SerializedProperty property, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition)
-        {
-            DoMinMaxSlider(position, property, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition, property.displayName);
-        }
-
-        public static void DoMinMaxSlider(Rect position, SerializedProperty property, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition, string label)
-        {
-            DoMinMaxSlider(position, property, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition, EditorGUIUtility.TrTempContent(label));
-        }
-
-        public static void DoMinMaxSlider(Rect position, SerializedProperty property, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition, GUIContent content)
-        {
-            var propertyLabel = EditorGUI.BeginProperty(position, content, property);
-            Vector2 value = property.vector2Value;
-            EditorGUI.BeginChangeCheck();
-            value = DoMinMaxSlider(position, propertyLabel, value, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition);
-            if (EditorGUI.EndChangeCheck())
-            {
-                property.vector2Value = value;
-            }
-            EditorGUI.EndProperty();
-        }
-
         /// <summary>
         /// MinMaxSlider with float values and label.
         /// </summary>
@@ -101,9 +55,11 @@ namespace DaleOfWinter.Tools.Editor
         /// <summary>
         /// MinMaxSlider with float values.
         /// </summary>
-        public static Vector2 DoMinMaxSlider(Rect position, Vector2 value, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition)
+        private static Vector2 DoMinMaxSlider(Rect position, Vector2 value, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition, SerializedProperty minFieldWrapper = null, SerializedProperty maxFieldWrapper = null)
         {
             Vector2 newValue = value;
+            int prevIndentLevel = EditorGUI.indentLevel;
+            EditorGUI.indentLevel = 0;
 
             float spacing = 5;
             float fieldWidth = EditorGUIUtility.fieldWidth;
@@ -115,7 +71,6 @@ namespace DaleOfWinter.Tools.Editor
                 fieldWidth = (position.width - (spacing * (fieldsToShow - 1))) / fieldsToShow;
             float sliderWidth = onlyShowFields ? 0f : position.width - requiredSpaceForFields;
 
-            
             if (!onlyShowFields)
             {
                 Rect pos = new Rect(position);
@@ -144,7 +99,15 @@ namespace DaleOfWinter.Tools.Editor
                 pos.width = fieldWidth;
                 pos.x += minValueFieldPosition == SliderFieldPosition.Left ? 0 : leftFields * (fieldWidth + spacing) + sliderWidth + spacing;
                 EditorGUI.BeginChangeCheck();
-                newValue.x = EditorGUI.DelayedFloatField(pos, newValue.x);
+                if (minFieldWrapper != null)
+                {
+                    Rect propPos = pos;
+                    propPos.x -= 16;
+                    EditorGUI.BeginProperty(propPos, GUIContent.none, minFieldWrapper);
+                }
+                newValue.x = EditorGUI.FloatField(pos, newValue.x);
+                if (minFieldWrapper != null)
+                    EditorGUI.EndProperty();
                 if (EditorGUI.EndChangeCheck())
                 {
                     newValue.x = Mathf.Clamp(newValue.x, minLimit, maxLimit);
@@ -159,7 +122,15 @@ namespace DaleOfWinter.Tools.Editor
                 pos.width = fieldWidth;
                 pos.x += maxValueFieldPosition == SliderFieldPosition.Left ? (leftFields - 1) * (fieldWidth + spacing) : position.width - fieldWidth;
                 EditorGUI.BeginChangeCheck();
-                newValue.y = EditorGUI.DelayedFloatField(pos, newValue.y);
+                if (maxFieldWrapper != null)
+                {
+                    Rect propPos = pos;
+                    propPos.x -= 16;
+                    EditorGUI.BeginProperty(propPos, GUIContent.none, maxFieldWrapper);
+                }
+                newValue.y = EditorGUI.FloatField(pos, newValue.y);
+                if (maxFieldWrapper != null)
+                    EditorGUI.EndProperty();
                 if (EditorGUI.EndChangeCheck())
                 {
                     newValue.y = Mathf.Clamp(newValue.y, minLimit, maxLimit);
@@ -168,6 +139,7 @@ namespace DaleOfWinter.Tools.Editor
                 }
             }
 
+            EditorGUI.indentLevel = prevIndentLevel;
             return new Vector2(newValue.x, newValue.y);
         }
 
