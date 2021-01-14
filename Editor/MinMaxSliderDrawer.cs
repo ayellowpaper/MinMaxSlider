@@ -10,46 +10,67 @@ namespace DaleOfWinter.Tools.Editor
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             MinMaxSliderAttribute minMaxAttribute = (MinMaxSliderAttribute)attribute;
+            // Check for float
             if (property.propertyType == SerializedPropertyType.Float)
             {
                 string maxVariableName = minMaxAttribute.MaxVariableName;
-                if (string.IsNullOrEmpty(maxVariableName))
-                {
-                    EditorGUI.LabelField(position, label.text, "You need to use MaxVariableName when using int to supply the max value. This needs to be a serialized field of type float.");
-                    return;
-                }
-
-                var maxProp = property.serializedObject.FindProperty(property.propertyPath.Replace(property.name, maxVariableName));
-                if (maxProp == null)
-                {
-                    EditorGUI.LabelField(position, label.text, $"Variable {maxVariableName} needs to exist and needs to be serializable.");
-                    return;
-                }
-
-                if (maxProp.propertyType != SerializedPropertyType.Float)
-                {
-                    EditorGUI.LabelField(position, label.text, $"Variable {maxVariableName} needs to be of type float.");
-                    return;
-                }
-
-                DOWEditorGUI.DoMinMaxSlider(position, property, maxProp, minMaxAttribute.Min, minMaxAttribute.Max, minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition, minMaxAttribute.DisplayName ?? property.displayName);
+                if (FindMaxProperty(property, maxVariableName, SerializedPropertyType.Float, out SerializedProperty maxProperty, out string warning))
+                    DOWEditorGUI.MinMaxSlider(position, property, maxProperty, minMaxAttribute.Min, minMaxAttribute.Max, minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition, minMaxAttribute.DisplayName ?? property.displayName);
+                else
+                    EditorGUI.LabelField(position, EditorGUIUtility.TrTextContent(minMaxAttribute.DisplayName ?? property.displayName, warning), EditorGUIUtility.TrTempContent(warning));
             }
+            // Check for int
             else if (property.propertyType == SerializedPropertyType.Integer)
             {
-
+                string maxVariableName = minMaxAttribute.MaxVariableName;
+                if (FindMaxProperty(property, maxVariableName, SerializedPropertyType.Integer, out SerializedProperty maxProperty, out string warning))
+                    DOWEditorGUI.MinMaxSliderInt(position, property, maxProperty, Mathf.RoundToInt(minMaxAttribute.Min), Mathf.RoundToInt(minMaxAttribute.Max), minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition, minMaxAttribute.DisplayName ?? property.displayName);
+                else
+                    EditorGUI.LabelField(position, EditorGUIUtility.TrTextContent(minMaxAttribute.DisplayName ?? property.displayName, warning), EditorGUIUtility.TrTempContent(warning));
             }
+            // Check for Vector2
             else if (property.propertyType == SerializedPropertyType.Vector2)
             {
-                DOWEditorGUI.DoMinMaxSlider(position, property, minMaxAttribute.Min, minMaxAttribute.Max, minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition);
+                DOWEditorGUI.MinMaxSlider(position, property, minMaxAttribute.Min, minMaxAttribute.Max, minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition);
             }
+            // Check for Vector2Int
             else if (property.propertyType == SerializedPropertyType.Vector2Int)
             {
-                DOWEditorGUI.DoIntMinMaxSlider(position, property, Mathf.RoundToInt(minMaxAttribute.Min), Mathf.RoundToInt(minMaxAttribute.Max), minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition);
+                DOWEditorGUI.MinMaxSliderInt(position, property, Mathf.RoundToInt(minMaxAttribute.Min), Mathf.RoundToInt(minMaxAttribute.Max), minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition);
             }
             else
             {
-                EditorGUI.LabelField(position, label.text, "Use MinMaxSlider with Vector2 or Vector2Int.");
+                EditorGUI.LabelField(position, label.text, "Use MinMaxSlider with Vector2, Vector2Int, float or int.");
             }
+        }
+
+        /// <summary>
+        /// Find the max property by it's variable name. Returns true on success and false with a warning message otherwise.
+        /// </summary>
+        bool FindMaxProperty(SerializedProperty property, string variableName, SerializedPropertyType desiredType, out SerializedProperty maxProperty, out string warning)
+        {
+            if (string.IsNullOrEmpty(variableName))
+            {
+                warning = $"You need to supply MaxVariableName when using {desiredType} to supply the max value. This needs to be a serialized field of type {desiredType}.";
+                maxProperty = null;
+                return false;
+            }
+
+            maxProperty = property.serializedObject.FindProperty(property.propertyPath.Replace(property.name, variableName));
+            if (maxProperty == null)
+            {
+                warning = $"Variable '{variableName}' needs to exist and be serializable.";
+                return false;
+            }
+
+            if (maxProperty.propertyType != desiredType)
+            {
+                warning = $"Variable '{variableName}' needs to be a {desiredType}.";
+                return false;
+            }
+
+            warning = null;
+            return true;
         }
     }
 }
