@@ -63,8 +63,8 @@ namespace DaleOfWinter.Tools.Editor
             value = HandleMinMaxSliderInt(position, value, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition, minProperty, maxProperty);
             if (EditorGUI.EndChangeCheck())
             {
-                minProperty.floatValue = value.x;
-                maxProperty.floatValue = value.y;
+                minProperty.intValue = value.x;
+                maxProperty.intValue = value.y;
             }
         }
 

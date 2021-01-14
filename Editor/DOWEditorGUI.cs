@@ -95,13 +95,15 @@ namespace DaleOfWinter.Tools.Editor
             EditorGUI.indentLevel = 0;
 
             float spacing = 5;
+            // we add some additional space to the field to the right of the slider if we have wrappers, because the blue override bar needs more space
+            float additionalRightSpace = (minValueFieldPosition == SliderFieldPosition.Right || maxValueFieldPosition == SliderFieldPosition.Right) && minFieldWrapper != null && maxFieldWrapper != null ? 3f : 0f;
             float fieldWidth = EditorGUIUtility.fieldWidth;
             int fieldsToShow = (minValueFieldPosition == SliderFieldPosition.None ? 0 : 1) + (maxValueFieldPosition == SliderFieldPosition.None ? 0 : 1);
             int leftFields = (minValueFieldPosition == SliderFieldPosition.Left ? 1 : 0) + (maxValueFieldPosition == SliderFieldPosition.Left ? 1 : 0);
-            float requiredSpaceForFields = fieldsToShow * (fieldWidth + spacing);
+            float requiredSpaceForFields = fieldsToShow * (fieldWidth + spacing) + additionalRightSpace;
             bool onlyShowFields = requiredSpaceForFields > position.width;
             if (onlyShowFields)
-                fieldWidth = (position.width - (spacing * (fieldsToShow - 1))) / fieldsToShow;
+                fieldWidth = (position.width - additionalRightSpace - (spacing * (fieldsToShow - 1))) / fieldsToShow;
             float sliderWidth = onlyShowFields ? 0f : position.width - requiredSpaceForFields;
 
             if (!onlyShowFields)
@@ -115,13 +117,9 @@ namespace DaleOfWinter.Tools.Editor
                 if (EditorGUI.EndChangeCheck())
                 {
                     if (newValue.x != value.x)
-                    {
                         newValue.x = GetSliderAdjustedValue(newValue.x, minLimit, maxLimit, sliderWidth);
-                    }
                     if (newValue.y != value.y)
-                    {
                         newValue.y = GetSliderAdjustedValue(newValue.y, minLimit, maxLimit, sliderWidth);
-                    }
                     GUI.FocusControl(SliderControlName);
                 }
             }
@@ -189,22 +187,15 @@ namespace DaleOfWinter.Tools.Editor
         /// </summary>
         public static float GetSliderAdjustedValue(float val, float minLimit, float maxLimit, float sliderWidth)
         {
-            float f = (maxLimit - minLimit) / (sliderWidth - GUI.skin.horizontalSlider.padding.horizontal - GUI.skin.horizontalSliderThumb.fixedWidth);
-            val = RoundBasedOnMinimumDifference(val, Mathf.Abs(f));
-            return Mathf.Clamp(val, Mathf.Min(minLimit, maxLimit), Mathf.Max(minLimit, maxLimit));
-        }
-
-        /// <summary>
-        /// Round based on minimum difference.
-        /// </summary>
-        public static float RoundBasedOnMinimumDifference(float valueToRound, float minDifference)
-        {
-            if (minDifference == 0f)
+            float minDiff = Mathf.Abs((maxLimit - minLimit) / (sliderWidth - GUI.skin.horizontalSlider.padding.horizontal - GUI.skin.horizontalSliderThumb.fixedWidth));
+            if (minDiff == 0f)
             {
-                int digits = Mathf.Clamp((int)(5f - Mathf.Log10(Mathf.Abs(valueToRound))), 0, 15);
-                return (float)Math.Round(valueToRound, digits, MidpointRounding.AwayFromZero);
+                int digits = Mathf.Clamp((int)(5f - Mathf.Log10(Mathf.Abs(val))), 0, 15);
+                val = (float)Math.Round(val, digits, MidpointRounding.AwayFromZero);
             }
-            return (float)Math.Round(valueToRound, Mathf.Clamp(-Mathf.FloorToInt(Mathf.Log10(Mathf.Abs(minDifference))), 0, 15), MidpointRounding.AwayFromZero);
+            else
+                val = (float)Math.Round(val, Mathf.Clamp(-Mathf.FloorToInt(Mathf.Log10(Mathf.Abs(minDiff))), 0, 15), MidpointRounding.AwayFromZero);
+            return Mathf.Clamp(val, Mathf.Min(minLimit, maxLimit), Mathf.Max(minLimit, maxLimit));
         }
     }
 }
