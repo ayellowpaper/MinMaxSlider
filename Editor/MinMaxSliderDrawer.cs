@@ -15,7 +15,7 @@ namespace DaleOfWinter.Tools.Editor
             {
                 string maxVariableName = minMaxAttribute.MaxVariableName;
                 if (FindMaxProperty(property, maxVariableName, SerializedPropertyType.Float, out SerializedProperty maxProperty, out string warning))
-                    DOWEditorGUI.MinMaxSlider(position, property, maxProperty, minMaxAttribute.Min, minMaxAttribute.Max, minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition, minMaxAttribute.DisplayName ?? property.displayName);
+                    DOWEditorGUI.MinMaxSlider(position, minMaxAttribute.DisplayName ?? property.displayName, property, maxProperty, minMaxAttribute.Min, minMaxAttribute.Max, minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition);
                 else
                     EditorGUI.LabelField(position, EditorGUIUtility.TrTextContent(minMaxAttribute.DisplayName ?? property.displayName, warning), EditorGUIUtility.TrTempContent(warning));
             }
@@ -24,7 +24,7 @@ namespace DaleOfWinter.Tools.Editor
             {
                 string maxVariableName = minMaxAttribute.MaxVariableName;
                 if (FindMaxProperty(property, maxVariableName, SerializedPropertyType.Integer, out SerializedProperty maxProperty, out string warning))
-                    DOWEditorGUI.MinMaxSliderInt(position, property, maxProperty, Mathf.RoundToInt(minMaxAttribute.Min), Mathf.RoundToInt(minMaxAttribute.Max), minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition, minMaxAttribute.DisplayName ?? property.displayName);
+                    DOWEditorGUI.MinMaxSliderInt(position, minMaxAttribute.DisplayName ?? property.displayName, property, maxProperty, Mathf.RoundToInt(minMaxAttribute.Min), Mathf.RoundToInt(minMaxAttribute.Max), minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition);
                 else
                     EditorGUI.LabelField(position, EditorGUIUtility.TrTextContent(minMaxAttribute.DisplayName ?? property.displayName, warning), EditorGUIUtility.TrTempContent(warning));
             }

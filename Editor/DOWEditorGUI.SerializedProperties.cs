@@ -9,13 +9,13 @@ namespace DaleOfWinter.Tools.Editor
     public static partial class DOWEditorGUI
     {
         #region MinMaxSlider with SerializedProperty
-        public static void MinMaxSliderInt(Rect position, SerializedProperty property, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition) =>
-            MinMaxSliderInt(position, property, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition, property.displayName);
+        public static void MinMaxSliderInt(Rect position, SerializedProperty property, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition) =>
+            MinMaxSliderInt(position, property.displayName, property, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition);
 
-        public static void MinMaxSliderInt(Rect position, SerializedProperty property, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition, string label) =>
-            MinMaxSliderInt(position, property, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition, EditorGUIUtility.TrTempContent(label));
+        public static void MinMaxSliderInt(Rect position, string label, SerializedProperty property, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition) =>
+            MinMaxSliderInt(position, EditorGUIUtility.TrTempContent(label), property, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition);
 
-        public static void MinMaxSliderInt(Rect position, SerializedProperty property, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition, GUIContent content)
+        public static void MinMaxSliderInt(Rect position, GUIContent content, SerializedProperty property, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition)
         {
             var propertyLabel = EditorGUI.BeginProperty(position, content, property);
             Vector2Int value = property.vector2IntValue;
@@ -28,13 +28,13 @@ namespace DaleOfWinter.Tools.Editor
             EditorGUI.EndProperty();
         }
 
-        public static void MinMaxSlider(Rect position, SerializedProperty property, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition) =>
-            MinMaxSlider(position, property, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition, property.displayName);
+        public static void MinMaxSlider(Rect position, SerializedProperty property, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition) =>
+            MinMaxSlider(position, property.displayName, property, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition);
 
-        public static void MinMaxSlider(Rect position, SerializedProperty property, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition, string label) => 
-            MinMaxSlider(position, property, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition, EditorGUIUtility.TrTempContent(label));
+        public static void MinMaxSlider(Rect position, string label, SerializedProperty property, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition) => 
+            MinMaxSlider(position, EditorGUIUtility.TrTempContent(label), property, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition);
 
-        public static void MinMaxSlider(Rect position, SerializedProperty property, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition, GUIContent content)
+        public static void MinMaxSlider(Rect position, GUIContent content, SerializedProperty property, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition)
         {
             var propertyLabel = EditorGUI.BeginProperty(position, content, property);
             Vector2 value = property.vector2Value;
@@ -48,19 +48,19 @@ namespace DaleOfWinter.Tools.Editor
         }
         #endregion
 
-        #region MinMaxSlider with 2 SerializedProperties
-        public static void MinMaxSliderInt(Rect position, SerializedProperty minProperty, SerializedProperty maxProperty, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition) =>
-            MinMaxSliderInt(position, minProperty, maxProperty, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition, minProperty.displayName);
+        #region MinMaxSlider with two SerializedProperties
+        public static void MinMaxSliderInt(Rect position, SerializedProperty minProperty, SerializedProperty maxProperty, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition) =>
+            MinMaxSliderInt(position, minProperty.displayName, minProperty, maxProperty, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition);
 
-        public static void MinMaxSliderInt(Rect position, SerializedProperty minProperty, SerializedProperty maxProperty, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition, string label) =>
-            MinMaxSliderInt(position, minProperty, maxProperty, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition, EditorGUIUtility.TrTempContent(label));
+        public static void MinMaxSliderInt(Rect position, string label, SerializedProperty minProperty, SerializedProperty maxProperty, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition) =>
+            MinMaxSliderInt(position, EditorGUIUtility.TrTempContent(label), minProperty, maxProperty, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition);
 
-        public static void MinMaxSliderInt(Rect position, SerializedProperty minProperty, SerializedProperty maxProperty, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition, GUIContent content)
+        public static void MinMaxSliderInt(Rect position, GUIContent content, SerializedProperty minProperty, SerializedProperty maxProperty, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition)
         {
             position = EditorGUI.PrefixLabel(position, content);
             Vector2Int value = new Vector2Int(minProperty.intValue, maxProperty.intValue);
             EditorGUI.BeginChangeCheck();
-            value = HandleMinMaxSliderInt(position, value, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition, minProperty, maxProperty);
+            value = HandleMinMaxSliderInt(position, value, minLimit, maxLimit, minProperty, maxProperty, minValueFieldPosition, maxValueFieldPosition);
             if (EditorGUI.EndChangeCheck())
             {
                 minProperty.intValue = value.x;
@@ -68,18 +68,18 @@ namespace DaleOfWinter.Tools.Editor
             }
         }
 
-        public static void MinMaxSlider(Rect position, SerializedProperty minProperty, SerializedProperty maxProperty, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition) =>
-            MinMaxSlider(position, minProperty, maxProperty, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition, minProperty.displayName);
+        public static void MinMaxSlider(Rect position, SerializedProperty minProperty, SerializedProperty maxProperty, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition) =>
+            MinMaxSlider(position, minProperty.displayName, minProperty, maxProperty, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition);
 
-        public static void MinMaxSlider(Rect position, SerializedProperty minProperty, SerializedProperty maxProperty, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition, string label) =>
-            MinMaxSlider(position, minProperty, maxProperty, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition, EditorGUIUtility.TrTempContent(label));
+        public static void MinMaxSlider(Rect position, string label, SerializedProperty minProperty, SerializedProperty maxProperty, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition) =>
+            MinMaxSlider(position, EditorGUIUtility.TrTempContent(label), minProperty, maxProperty, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition);
 
-        public static void MinMaxSlider(Rect position, SerializedProperty minProperty, SerializedProperty maxProperty, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition, SliderFieldPosition maxValueFieldPosition, GUIContent content)
+        public static void MinMaxSlider(Rect position, GUIContent content, SerializedProperty minProperty, SerializedProperty maxProperty, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition)
         {
             position = EditorGUI.PrefixLabel(position, content);
             Vector2 value = new Vector2(minProperty.floatValue, maxProperty.floatValue);
             EditorGUI.BeginChangeCheck();
-            value = HandleMinMaxSlider(position, value, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition, minProperty, maxProperty);
+            value = HandleMinMaxSlider(position, value, minLimit, maxLimit, minProperty, maxProperty, minValueFieldPosition, maxValueFieldPosition);
             if (EditorGUI.EndChangeCheck())
             {
                 minProperty.floatValue = value.x;
