@@ -7,6 +7,9 @@ using Zelude;
 
 namespace ZeludeEditor
 {
+    /// <summary>
+    /// MinMaxSlider EditorGUI analogous to Unity EditorGUI.
+    /// </summary>
     public static partial class MMSEditorGUI
     {
         public const string SliderControlName = "MinMaxSlider";
@@ -15,6 +18,7 @@ namespace ZeludeEditor
 
         static MMSEditorGUI()
         {
+            // get the override color from unity code, otherwise fall back
             if (OverrideColor == default)
             {
                 var fieldInfo = typeof(EditorGUI).GetField("k_OverrideMarginColor", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
@@ -29,11 +33,27 @@ namespace ZeludeEditor
         }
 
         /// <summary>
+        /// Returns a nicely formatted tooltip text for the value.
+        /// </summary>
+        public static string GetTooltipText(Vector2 value)
+        {
+            return string.Format(Format, value.x, value.y, value.y - value.x);
+        }
+
+        /// <summary>
+        /// Put the additional text in front of the tooltip if it exists, otherwise returns addition.
+        /// </summary>
+        public static string AddToTooltip(string tooltip, string addition)
+        {
+            return addition + (string.IsNullOrEmpty(tooltip) ? "" : "\n" + tooltip);
+        }
+
+        /// <summary>
         /// MinMaxSliderInt with GUIContent.
         /// </summary>
         public static Vector2Int MinMaxSliderInt(Rect position, GUIContent content, Vector2Int value, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition)
         {
-            content.tooltip = string.Format(Format, value.x, value.y, value.y - value.x) + (string.IsNullOrEmpty(content.tooltip) ? "" : "\n" + content.tooltip);
+            content.tooltip = AddToTooltip(content.tooltip, GetTooltipText(value));
             Rect newPosition = EditorGUI.PrefixLabel(position, content);
             return HandleMinMaxSliderInt(newPosition, value, minLimit, maxLimit, null, null, minValueFieldPosition, maxValueFieldPosition);
         }
@@ -55,7 +75,7 @@ namespace ZeludeEditor
         /// </summary>
         public static Vector2 MinMaxSlider(Rect position, GUIContent content, Vector2 value, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition)
         {
-            content.tooltip = string.Format(Format, value.x, value.y, value.y - value.x) + (string.IsNullOrEmpty(content.tooltip) ? "" : "\n" + content.tooltip);
+            content.tooltip = AddToTooltip(content.tooltip, GetTooltipText(value));
             Rect newPosition = EditorGUI.PrefixLabel(position, content);
             return HandleMinMaxSlider(newPosition, value, minLimit, maxLimit, null, null, minValueFieldPosition, maxValueFieldPosition);
         }

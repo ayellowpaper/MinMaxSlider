@@ -57,8 +57,9 @@ namespace ZeludeEditor
 
         public static void MinMaxSliderInt(Rect position, GUIContent content, SerializedProperty minProperty, SerializedProperty maxProperty, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition)
         {
-            position = EditorGUI.PrefixLabel(position, content);
             Vector2Int value = new Vector2Int(minProperty.intValue, maxProperty.intValue);
+            content.tooltip = AddToTooltip(content.tooltip, GetTooltipText(value));
+            position = EditorGUI.PrefixLabel(position, content);
             EditorGUI.BeginChangeCheck();
             value = HandleMinMaxSliderInt(position, value, minLimit, maxLimit, minProperty, maxProperty, minValueFieldPosition, maxValueFieldPosition);
             if (EditorGUI.EndChangeCheck())
@@ -76,8 +77,9 @@ namespace ZeludeEditor
 
         public static void MinMaxSlider(Rect position, GUIContent content, SerializedProperty minProperty, SerializedProperty maxProperty, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition)
         {
-            position = EditorGUI.PrefixLabel(position, content);
             Vector2 value = new Vector2(minProperty.floatValue, maxProperty.floatValue);
+            content.tooltip = AddToTooltip(content.tooltip, GetTooltipText(value));
+            position = EditorGUI.PrefixLabel(position, content);
             EditorGUI.BeginChangeCheck();
             value = HandleMinMaxSlider(position, value, minLimit, maxLimit, minProperty, maxProperty, minValueFieldPosition, maxValueFieldPosition);
             if (EditorGUI.EndChangeCheck())
