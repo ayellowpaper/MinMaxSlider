@@ -1,8 +1,12 @@
 {
-    "name": "Zelude",
+    "name": "Zelude.MinMaxSlider.Editor",
     "rootNamespace": "",
-    "references": [],
-    "includePlatforms": [],
+    "references": [
+        "GUID:784fd6b4529f8524dbe2b66b93da0896"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
