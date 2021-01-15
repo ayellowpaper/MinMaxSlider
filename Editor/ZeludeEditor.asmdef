@@ -1,5 +1,5 @@
 {
-    "name": "DaleOfWinter.Tools.Editor",
+    "name": "ZeludeEditor",
     "rootNamespace": "",
     "references": [
         "GUID:784fd6b4529f8524dbe2b66b93da0896"
@@ -11,7 +11,7 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false

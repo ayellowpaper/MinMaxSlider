@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEditor;
 using System;
+using Zelude;
 
-namespace DaleOfWinter.Tools.Editor
+namespace ZeludeEditor
 {
     [CustomPropertyDrawer(typeof(MinMaxSliderAttribute))]
     public class MinMaxSliderDrawer : PropertyDrawer
@@ -15,7 +16,7 @@ namespace DaleOfWinter.Tools.Editor
             {
                 string maxVariableName = minMaxAttribute.MaxVariableName;
                 if (FindMaxProperty(property, maxVariableName, SerializedPropertyType.Float, out SerializedProperty maxProperty, out string warning))
-                    DOWEditorGUI.MinMaxSlider(position, minMaxAttribute.DisplayName ?? property.displayName, property, maxProperty, minMaxAttribute.Min, minMaxAttribute.Max, minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition);
+                    MMSEditorGUI.MinMaxSlider(position, minMaxAttribute.DisplayName ?? property.displayName, property, maxProperty, minMaxAttribute.Min, minMaxAttribute.Max, minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition);
                 else
                     EditorGUI.LabelField(position, EditorGUIUtility.TrTextContent(minMaxAttribute.DisplayName ?? property.displayName, warning), EditorGUIUtility.TrTempContent(warning));
             }
@@ -24,19 +25,19 @@ namespace DaleOfWinter.Tools.Editor
             {
                 string maxVariableName = minMaxAttribute.MaxVariableName;
                 if (FindMaxProperty(property, maxVariableName, SerializedPropertyType.Integer, out SerializedProperty maxProperty, out string warning))
-                    DOWEditorGUI.MinMaxSliderInt(position, minMaxAttribute.DisplayName ?? property.displayName, property, maxProperty, Mathf.RoundToInt(minMaxAttribute.Min), Mathf.RoundToInt(minMaxAttribute.Max), minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition);
+                    MMSEditorGUI.MinMaxSliderInt(position, minMaxAttribute.DisplayName ?? property.displayName, property, maxProperty, Mathf.RoundToInt(minMaxAttribute.Min), Mathf.RoundToInt(minMaxAttribute.Max), minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition);
                 else
                     EditorGUI.LabelField(position, EditorGUIUtility.TrTextContent(minMaxAttribute.DisplayName ?? property.displayName, warning), EditorGUIUtility.TrTempContent(warning));
             }
             // Check for Vector2
             else if (property.propertyType == SerializedPropertyType.Vector2)
             {
-                DOWEditorGUI.MinMaxSlider(position, property, minMaxAttribute.Min, minMaxAttribute.Max, minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition);
+                MMSEditorGUI.MinMaxSlider(position, property, minMaxAttribute.Min, minMaxAttribute.Max, minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition);
             }
             // Check for Vector2Int
             else if (property.propertyType == SerializedPropertyType.Vector2Int)
             {
-                DOWEditorGUI.MinMaxSliderInt(position, property, Mathf.RoundToInt(minMaxAttribute.Min), Mathf.RoundToInt(minMaxAttribute.Max), minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition);
+                MMSEditorGUI.MinMaxSliderInt(position, property, Mathf.RoundToInt(minMaxAttribute.Min), Mathf.RoundToInt(minMaxAttribute.Max), minMaxAttribute.MinFieldPosition, minMaxAttribute.MaxFieldPosition);
             }
             else
             {

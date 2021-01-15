@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-namespace DaleOfWinter.Tools
+namespace Zelude
 {
     [AttributeUsage(AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
     public class MinMaxSliderAttribute : PropertyAttribute

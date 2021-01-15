@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using DaleOfWinter.Tools;
+using Zelude;
 
-namespace DaleOfWinter.Tools.Editor
+namespace ZeludeEditor
 {
-    public static partial class DOWEditorGUI
+    public static partial class MMSEditorGUI
     {
         #region MinMaxSlider with SerializedProperty
         public static void MinMaxSliderInt(Rect position, SerializedProperty property, int minLimit, int maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition) =>

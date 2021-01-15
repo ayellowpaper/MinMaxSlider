@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System;
+using Zelude;
 
-namespace DaleOfWinter.Tools.Editor
+namespace ZeludeEditor
 {
-    public static partial class DOWEditorGUI
+    public static partial class MMSEditorGUI
     {
         public const string SliderControlName = "MinMaxSlider";
         private const string Format = "Min: {0}\nMax: {1}\nRange: {2}";
         private static readonly Color OverrideColor = default;
 
-        static DOWEditorGUI()
+        static MMSEditorGUI()
         {
             if (OverrideColor == default)
             {

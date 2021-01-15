@@ -17,7 +17,7 @@ Easily create a MinMaxSlider for your needs. Get started within seconds and conf
 ## How to use: Attribute
 Use this namespace to use the attribute:
 ```CSharp
-using DaleOfWinter.Tools;
+using Zelude;
 ```
 
 ### Vector2, Vector2Int
@@ -29,9 +29,9 @@ using DaleOfWinter.Tools;
 ## How to use: Custom Editor
 Use this namespace to use the editor code:
 ```CSharp
-using DaleOfWinter.Tools.Editor;
+using ZeludeEditor;
 ```
-All the Editor Code you need is in **DOWEditorGUI** and can be called like this:
+All the Editor Code you need is in **MMSEditorGUI** and can be called like this:
 ```CSharp
-DOWEditorGUI.MinMaxSlider(position, EditorGUIUtility.TrTempContent("My Slider"), myVector, 0f, 1f, SliderFieldPosition.Left, SliderFieldPosition.Right);
+MMSEditorGUI.MinMaxSlider(position, EditorGUIUtility.TrTempContent("My Slider"), myVector, 0f, 1f, SliderFieldPosition.Left, SliderFieldPosition.Right);
 ```
