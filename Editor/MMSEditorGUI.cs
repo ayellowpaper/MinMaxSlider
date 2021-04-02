@@ -73,31 +73,32 @@ namespace ZeludeEditor
         /// <summary>
         /// MinMaxSlider with GUIContent.
         /// </summary>
-        public static Vector2 MinMaxSlider(Rect position, GUIContent content, Vector2 value, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition)
+        public static Vector2 MinMaxSlider(Rect position, GUIContent content, Vector2 value, float minLimit, float maxLimit, string id = null, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition)
         {
             content.tooltip = AddToTooltip(content.tooltip, GetTooltipText(value));
             Rect newPosition = EditorGUI.PrefixLabel(position, content);
-            return HandleMinMaxSlider(newPosition, value, minLimit, maxLimit, null, null, minValueFieldPosition, maxValueFieldPosition);
+            return HandleMinMaxSlider(newPosition, value, minLimit, maxLimit, null, null, id, minValueFieldPosition, maxValueFieldPosition);
         }
 
         /// <summary>
         /// MinMaxSlider without label.
         /// </summary>
-        public static Vector2 MinMaxSlider(Rect position, Vector2 value, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition) =>
-            HandleMinMaxSlider(position, value, minLimit, maxLimit, null, null, minValueFieldPosition, maxValueFieldPosition);
+        public static Vector2 MinMaxSlider(Rect position, Vector2 value, float minLimit, float maxLimit, string id = null, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition) =>
+            HandleMinMaxSlider(position, value, minLimit, maxLimit, null, null, id, minValueFieldPosition, maxValueFieldPosition);
 
         /// <summary>
         /// MinMaxSlider with label.
         /// </summary>
-        public static Vector2 MinMaxSlider(Rect position, string label, Vector2 value, float minLimit, float maxLimit, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition) =>
-            MinMaxSlider(position, EditorGUIUtility.TrTempContent(label), value, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition);
+        public static Vector2 MinMaxSlider(Rect position, string label, Vector2 value, float minLimit, float maxLimit, string id = null, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition) =>
+            MinMaxSlider(position, EditorGUIUtility.TrTempContent(label), value, minLimit, maxLimit, id, minValueFieldPosition, maxValueFieldPosition);
 
         /// <summary>
         /// MinMaxSlider with int values.
         /// </summary>
         private static Vector2Int HandleMinMaxSliderInt(Rect position, Vector2Int value, int minLimit, int maxLimit, SerializedProperty minFieldWrapper, SerializedProperty maxFieldWrapper, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition)
         {
-            var newValue = HandleMinMaxSlider(position, value, minLimit, maxLimit, minFieldWrapper, maxFieldWrapper, minValueFieldPosition, maxValueFieldPosition);
+            string id = minFieldWrapper != null ? minFieldWrapper.propertyPath : maxFieldWrapper != null ? maxFieldWrapper.propertyPath : null;
+            var newValue = HandleMinMaxSlider(position, value, minLimit, maxLimit, minFieldWrapper, maxFieldWrapper, id, minValueFieldPosition, maxValueFieldPosition);
             Vector2Int actualNewValue = new Vector2Int(Mathf.RoundToInt(newValue.x), Mathf.RoundToInt(newValue.y));
             // after dragging both values with the slider at the same time it's possible that the distance get's messed up because of rounding issues, so we check for that here
             int wantedDistance = Mathf.RoundToInt(newValue.y - newValue.x);
@@ -117,7 +118,7 @@ namespace ZeludeEditor
         /// MinMaxSlider with float values.
         /// </summary>
         /// <remarks>We have wrappers here so we can properly show overriden prefab values for min and max fields when using two serialized propertes instead of one.</remarks>
-        private static Vector2 HandleMinMaxSlider(Rect position, Vector2 value, float minLimit, float maxLimit, SerializedProperty minFieldWrapper, SerializedProperty maxFieldWrapper, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition)
+        private static Vector2 HandleMinMaxSlider(Rect position, Vector2 value, float minLimit, float maxLimit, SerializedProperty minFieldWrapper, SerializedProperty maxFieldWrapper, string id, SliderFieldPosition minValueFieldPosition = MinMaxSliderAttribute.DefaultMinFieldPosition, SliderFieldPosition maxValueFieldPosition = MinMaxSliderAttribute.DefaultMaxFieldPosition)
         {
             Vector2 newValue = value;
             int prevIndentLevel = EditorGUI.indentLevel;
@@ -134,22 +135,58 @@ namespace ZeludeEditor
             if (onlyShowFields)
                 fieldWidth = (position.width - additionalRightSpace - (spacing * (fieldsToShow - 1))) / fieldsToShow;
             float sliderWidth = onlyShowFields ? 0f : position.width - requiredSpaceForFields;
+            bool showSingularValue = EditorPrefs.GetBool(id, false);
 
             if (!onlyShowFields)
             {
                 Rect pos = new Rect(position);
                 pos.width = sliderWidth;
                 pos.x += leftFields * (fieldWidth + spacing);
-                EditorGUI.BeginChangeCheck();
-                GUI.SetNextControlName(SliderControlName);
-                EditorGUI.MinMaxSlider(pos, ref newValue.x, ref newValue.y, minLimit, maxLimit);
-                if (EditorGUI.EndChangeCheck())
+
+                var current = Event.current;
+                var clickArea = pos;
+                if (clickArea.Contains(current.mousePosition) && current.button == 1)
                 {
-                    if (newValue.x != value.x)
-                        newValue.x = GetSliderAdjustedValue(newValue.x, minLimit, maxLimit, sliderWidth);
-                    if (newValue.y != value.y)
-                        newValue.y = GetSliderAdjustedValue(newValue.y, minLimit, maxLimit, sliderWidth);
-                    GUI.FocusControl(SliderControlName);
+                    if (current.type == EventType.MouseUp || current.type == EventType.MouseDown || current.type == EventType.MouseDrag)
+                    {
+                        return value;
+                    }
+                    else if (current.type == EventType.ContextClick)
+                    {
+                        GenericMenu menu = new GenericMenu();
+                        menu.AddItem(new GUIContent(showSingularValue ? "Double Value Slider" : "Single Value Slider"), false, () => { EditorPrefs.SetBool(id, !showSingularValue); });
+                        menu.ShowAsContext();
+                        current.Use();
+                    }
+                }
+
+                if (showSingularValue)
+                {
+                    EditorGUI.BeginChangeCheck();
+                    GUI.SetNextControlName(SliderControlName);
+                    EditorGUI.DrawRect(new Rect(pos.x + pos.width * ((value.x - minLimit) / (maxLimit - minLimit)), pos.y + pos.height / 4f, pos.width * ((value.y - value.x) / (maxLimit - minLimit)), pos.height / 2f), new Color(1, 0.7f, 0, 0.5f));
+                    var newSingularValue = GUI.HorizontalSlider(pos, (newValue.x + newValue.y) / 2f, minLimit, maxLimit);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        newSingularValue = GetSliderAdjustedValue(newSingularValue, minLimit, maxLimit, sliderWidth);
+                        newValue.x = newSingularValue;
+                        newValue.y = newSingularValue;
+                        GUI.FocusControl(SliderControlName);
+                    }
+                }
+                else
+                {
+                    EditorGUI.BeginChangeCheck();
+                    GUI.SetNextControlName(SliderControlName);
+                    EditorGUI.MinMaxSlider(pos, ref newValue.x, ref newValue.y, minLimit, maxLimit);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        if (newValue.x != value.x)
+                            newValue.x = GetSliderAdjustedValue(newValue.x, minLimit, maxLimit, sliderWidth);
+                        if (newValue.y != value.y)
+                            newValue.y = GetSliderAdjustedValue(newValue.y, minLimit, maxLimit, sliderWidth);
+                        GUI.FocusControl(SliderControlName);
+                    }
                 }
             }
 

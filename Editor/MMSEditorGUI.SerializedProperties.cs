@@ -39,7 +39,7 @@ namespace ZeludeEditor
             var propertyLabel = EditorGUI.BeginProperty(position, content, property);
             Vector2 value = property.vector2Value;
             EditorGUI.BeginChangeCheck();
-            value = MinMaxSlider(position, propertyLabel, value, minLimit, maxLimit, minValueFieldPosition, maxValueFieldPosition);
+            value = MinMaxSlider(position, propertyLabel, value, minLimit, maxLimit, property.propertyPath, minValueFieldPosition, maxValueFieldPosition);
             if (EditorGUI.EndChangeCheck())
             {
                 property.vector2Value = value;
@@ -81,7 +81,7 @@ namespace ZeludeEditor
             content.tooltip = AddToTooltip(content.tooltip, GetTooltipText(value));
             position = EditorGUI.PrefixLabel(position, content);
             EditorGUI.BeginChangeCheck();
-            value = HandleMinMaxSlider(position, value, minLimit, maxLimit, minProperty, maxProperty, minValueFieldPosition, maxValueFieldPosition);
+            value = HandleMinMaxSlider(position, value, minLimit, maxLimit, minProperty, maxProperty, minProperty.propertyPath, minValueFieldPosition, maxValueFieldPosition);
             if (EditorGUI.EndChangeCheck())
             {
                 minProperty.floatValue = value.x;
