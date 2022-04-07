@@ -10,6 +10,7 @@ namespace ZeludeEditor
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            Debug.Log("test");
             MinMaxSliderAttribute minMaxAttribute = (MinMaxSliderAttribute)attribute;
             // Check for float
             if (property.propertyType == SerializedPropertyType.Float)
