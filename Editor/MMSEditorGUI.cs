@@ -43,9 +43,9 @@ namespace ZeludeEditor
         /// <summary>
         /// Put the additional text in front of the tooltip if it exists, otherwise returns addition.
         /// </summary>
-        public static string AddToTooltip(string tooltip, string addition)
+        public static string AddToTooltip(string tooltip, string additionalInformation)
         {
-            return addition + (string.IsNullOrEmpty(tooltip) ? "" : "\n" + tooltip);
+            return string.IsNullOrEmpty(tooltip) ? additionalInformation : $"{tooltip}\n\n{additionalInformation}";
         }
 
         /// <summary>
