@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
 using System;
+using UnityEditor;
+using UnityEngine;
 using Zelude;
 
 namespace ZeludeEditor
@@ -13,8 +11,16 @@ namespace ZeludeEditor
     public static partial class MMSEditorGUI
     {
         public const string SliderControlName = "MinMaxSlider";
+        private const string EditorPrefsShowRangeKey = "Zelude.MinMaxSlider.ShowRange";
         private const string Format = "Min: {0}\nMax: {1}\nRange: {2}";
         private static readonly Color OverrideColor = default;
+        private static readonly GUIStyle RangeLabelStyle;
+
+        public static bool ShowRangeValue
+        {
+            get => EditorPrefs.GetBool(EditorPrefsShowRangeKey, true);
+            set => EditorPrefs.SetBool(EditorPrefsShowRangeKey, value);
+        }
 
         static MMSEditorGUI()
         {
@@ -24,11 +30,19 @@ namespace ZeludeEditor
                 var fieldInfo = typeof(EditorGUI).GetField("k_OverrideMarginColor", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
                 if (fieldInfo != null && fieldInfo.FieldType == typeof(Color))
                 {
-                    var color = (Color) fieldInfo.GetValue(null);
+                    var color = (Color)fieldInfo.GetValue(null);
                     OverrideColor = color;
                 }
                 else
                     OverrideColor = new Color(0.003921569f, 0.6f, 47f / 51f, 0.75f);
+            }
+
+            if (RangeLabelStyle == null)
+            {
+                RangeLabelStyle = new GUIStyle(EditorStyles.label);
+                RangeLabelStyle.alignment = TextAnchor.MiddleCenter;
+                RangeLabelStyle.normal.textColor = new Color(42 / 255f, 42 / 255f, 42 / 255f);
+                RangeLabelStyle.fontSize = 11;
             }
         }
 
@@ -154,7 +168,9 @@ namespace ZeludeEditor
                     else if (current.type == EventType.ContextClick)
                     {
                         GenericMenu menu = new GenericMenu();
-                        menu.AddItem(new GUIContent(showSingularValue ? "Double Value Slider" : "Single Value Slider"), false, () => { EditorPrefs.SetBool(id, !showSingularValue); });
+                        menu.AddItem(new GUIContent("Single Value Slider"), showSingularValue, () => { EditorPrefs.SetBool(id, !showSingularValue); });
+                        menu.AddSeparator("");
+                        menu.AddItem(new GUIContent("Show Range Values"), ShowRangeValue, () => ShowRangeValue = !ShowRangeValue);
                         menu.ShowAsContext();
                         current.Use();
                     }
@@ -187,6 +203,9 @@ namespace ZeludeEditor
                             newValue.y = GetSliderAdjustedValue(newValue.y, minLimit, maxLimit, sliderWidth);
                         GUI.FocusControl(SliderControlName);
                     }
+
+                    if (ShowRangeValue)
+                        DrawRangeLabel(pos, newValue, minLimit, maxLimit, sliderWidth);
                 }
             }
 
@@ -246,6 +265,17 @@ namespace ZeludeEditor
 
             EditorGUI.indentLevel = prevIndentLevel;
             return new Vector2(newValue.x, newValue.y);
+        }
+
+        private static void DrawRangeLabel(Rect sliderPosition, Vector2 newValue, float minLimit, float maxLimit, float sliderWidth)
+        {
+            float range = GetSliderAdjustedValue(newValue.y - newValue.x, minLimit, maxLimit, sliderWidth);
+            Rect labelRect = sliderPosition;
+            float leftPercent = (newValue.x - minLimit) / (maxLimit - minLimit);
+            float rightPercent = (newValue.y - minLimit) / (maxLimit - minLimit);
+            labelRect.x += sliderPosition.width * leftPercent;
+            labelRect.width = sliderPosition.width * (rightPercent - leftPercent);
+            EditorGUI.LabelField(labelRect, range.ToString(), RangeLabelStyle);
         }
 
         /// <summary>
